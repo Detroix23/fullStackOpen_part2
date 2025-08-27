@@ -1,32 +1,41 @@
 import { useState } from 'react';
 
-const Person = ({ name }) => <li>{name}</li>
+const Person = ({ name, number }) => (
+  <tr>
+    <td>{name}</td>
+    <td>{number}</td>
+  </tr>
+);
 
 const PersonsList = ({ persons }) => {
   return (
-    <ul>
-      {persons.map((person) => 
-        <Person key={person.id} name={person.name} />
-      )}  
-    </ul>
+    <table>
+      <tbody>
+        {persons.map((person) => 
+          <Person key={person.id} name={person.name} number={person.number}/>
+        )}  
+      </tbody>
+    </table>
   );
 }
 
 const App = () => {
   const [persons, setPersons] = useState([
     { 
-      name: 'Arto Hellas', 
-      id: 0
+      name: 'Arto Hellas',
+      number: '00-00-0000001',
+      id: 0,
     }
   ]);
-  const [newName, setNewName] = useState('');
+  const [ newName, setNewName ] = useState('');
+  const [ newNumber, setNewNumber ] = useState('');
 
   const addPersonToPhonebook = (event) => {
     event.preventDefault();
 
     const personNames = persons.map((person) => person.name); 
+    
     const personAlreadyExists = personNames.includes(newName);
-    console.log(personAlreadyExists);
 
     // Add the person (or not if invalid entry).
     if (newName === '') {
@@ -39,7 +48,8 @@ const App = () => {
       console.log(`Form.addPerson - Person: ${newName}, id: ${id}`);
       const persons_new = persons.concat(
         {
-          name: newName, 
+          name: newName,
+          number: newNumber,
           id: id
         }
       );
@@ -47,9 +57,12 @@ const App = () => {
     }
   };
 
-  const handlePersonInput = (event) => {
+  const handleNameInput = (event) => {
     setNewName(event.target.value);
   };
+  const handleNumberInput = (event) => {
+    setNewNumber(event.target.value);
+  }
 
   return (
     <div>
@@ -57,12 +70,17 @@ const App = () => {
       <form onSubmit={addPersonToPhonebook} >
         <div>
           name: 
-          <input type="text" onChange={handlePersonInput} />
+          <input type="text" onChange={handleNameInput} />
+        </div>
+        <div>
+          number:
+          <input type="text" onChange={handleNumberInput} />
         </div>
         <div>
           <button type="submit">add</button>
         </div>
       </form>
+      
       <h2>Numbers</h2>
       <PersonsList persons={persons} />
     </div>
