@@ -30,6 +30,7 @@ const Search = ({ persons }) => {
         <input type="text" onChange={onSearch} />
       </form>
       <PersonsList persons={personsFiltered} />
+      {personsFiltered.length === 0 ? <p>...</p> : ''}
     </div>
   );
 };

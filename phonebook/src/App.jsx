@@ -2,14 +2,12 @@ import { useState } from 'react';
 
 import PersonsList from './components/Persons';
 import Search from './components/Search';
+import PersonForm from './components/PersonForm';
 
 const App = () => {
+  // Vars
   const [persons, setPersons] = useState([
-    { 
-      name: 'Arto Hellas',
-      number: '00-00-0000001',
-      id: 0,
-    },
+    { name: 'Arto Hellas', number: '00-00-0000001', id: 0 },
     { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
     { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
     { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
@@ -17,6 +15,7 @@ const App = () => {
   const [ newName, setNewName ] = useState('');
   const [ newNumber, setNewNumber ] = useState('');
 
+  // Form
   const addPersonToPhonebook = (event) => {
     event.preventDefault();
 
@@ -43,7 +42,6 @@ const App = () => {
       setPersons(persons_new);
     }
   };
-
   const handleNameInput = (event) => {
     setNewName(event.target.value);
   };
@@ -59,19 +57,11 @@ const App = () => {
       <Search persons={persons} />
 
       <h2>Add people.</h2>
-      <form onSubmit={addPersonToPhonebook} >
-        <div>
-          name: 
-          <input type="text" onChange={handleNameInput} />
-        </div>
-        <div>
-          number:
-          <input type="text" onChange={handleNumberInput} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm 
+        addPersonToPhonebook={addPersonToPhonebook}
+        handleNameInput={handleNameInput}
+        handleNumberInput={handleNumberInput}
+      />
       
       <h2>Numbers.</h2>
       <PersonsList persons={persons} />
