@@ -20,6 +20,7 @@ const CourseExercisesSum = ({ sum }) => {
 }
 
 const Course = ({ name, parts }) => {
+  // Already using reduce (ex2.3).
   let exercises_sum = parts.reduce((sum, part) => sum + part.exercises, 0);
   
   console.log(`Comp.Course: ${name}, ex sum: ${exercises_sum}, with parts:`, parts);
