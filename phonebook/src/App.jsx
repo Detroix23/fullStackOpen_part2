@@ -1,23 +1,7 @@
 import { useState } from 'react';
 
-const Person = ({ name, number }) => (
-  <tr>
-    <td>{name}</td>
-    <td>{number}</td>
-  </tr>
-);
-
-const PersonsList = ({ persons }) => {
-  return (
-    <table>
-      <tbody>
-        {persons.map((person) => 
-          <Person key={person.id} name={person.name} number={person.number}/>
-        )}  
-      </tbody>
-    </table>
-  );
-}
+import PersonsList from './components/Persons';
+import Search from './components/Search';
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -25,7 +9,10 @@ const App = () => {
       name: 'Arto Hellas',
       number: '00-00-0000001',
       id: 0,
-    }
+    },
+    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
   ]);
   const [ newName, setNewName ] = useState('');
   const [ newNumber, setNewNumber ] = useState('');
@@ -66,7 +53,12 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
+
+      <h2>Search</h2>
+      <Search persons={persons} />
+
+      <h2>Add people.</h2>
       <form onSubmit={addPersonToPhonebook} >
         <div>
           name: 
@@ -81,7 +73,7 @@ const App = () => {
         </div>
       </form>
       
-      <h2>Numbers</h2>
+      <h2>Numbers.</h2>
       <PersonsList persons={persons} />
     </div>
   );
