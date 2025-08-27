@@ -27,10 +27,14 @@ const App = () => {
     const personNames = persons.map((person) => person.name); 
     const personAlreadyExists = personNames.includes(newName);
     console.log(personAlreadyExists);
-    
 
     // Add the person (or not if invalid entry).
-    if (newName !== '' && !personAlreadyExists) {
+    if (newName === '') {
+      console.log(`Form.addPerson - Empty string (${newName}).`);
+    } else if (personAlreadyExists) {
+      console.log(`Form.addPerson - Already in (${newName})`);
+      window.alert(`'${newName}' is already in the phonebook.`);
+    } else {
       const id = persons[persons.length - 1].id + 1;
       console.log(`Form.addPerson - Person: ${newName}, id: ${id}`);
       const persons_new = persons.concat(
@@ -40,8 +44,6 @@ const App = () => {
         }
       );
       setPersons(persons_new);
-    } else {
-      console.log(`Form.addPerson - Empty string or already exists (${newName}).`);
     }
   };
 
