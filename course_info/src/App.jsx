@@ -9,8 +9,20 @@ const CoursePart = ({ name, exercises }) => {
   );
 };
 
+const CourseExercisesSum = ({ sum }) => {
+  console.log(`Comp.CourseExercisesSum: ${sum}`);
+  
+  return(
+    <p>
+      <b>Total of {sum} exercises.</b>
+    </p>
+  );
+}
+
 const Course = ({ name, parts }) => {
-  console.log(`Comp.Course: ${name}, with:`, parts);
+  let exercises_sum = parts.reduce((sum, part) => sum + part.exercises, 0);
+  
+  console.log(`Comp.Course: ${name}, ex sum: ${exercises_sum}, with parts:`, parts);
   
   return (
     <div>
@@ -18,6 +30,7 @@ const Course = ({ name, parts }) => {
       <ul>
         {parts.map((part) => <CoursePart key={part.id} name={part.name} exercises={part.exercises} />)}
       </ul>
+      <CourseExercisesSum sum={exercises_sum}/>
     </div>
   );
 }; 
