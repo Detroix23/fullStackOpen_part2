@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import noteService from './services/notes';
 import Note from './components/Note';
 
 const App = () => {
@@ -8,29 +9,35 @@ const App = () => {
   const [ newNote, setNewNote ] = useState("");
   const [ showAll, setShowAll ] = useState(true);
 
+  // Receiving notes from JSON server.
   useEffect(() => {
     console.log("Effect - start");
-    axios
-    .get('http://localhost:3001/notes')
-    .then((response) => {
-      console.log("Effect - Received notes:", response.data);
-      setNotes(response.data);
-    });
+    noteService
+      .getAll()
+      .then((notes_initial) => {
+        console.log("Effect - Received notes:", notes_initial);
+        setNotes(notes_initial);
+      });
   }, []);
-  console.log(`Effect - Notes length: ${notes.length}`);
+  // console.log(`Effect - Notes length: ${notes.length}`);
 
-  // Handlers
+  // Handlers.
   const handleNoteAdd = (event) => {
     event.preventDefault();
     if (newNote !== "") {
       const note_added = {
         content: newNote,
         important: Math.random() > 0.5,
-        id: String(notes.length + 1),
+        // id: String(notes.length + 1),
       }
       console.log(`Comp.NoteAddForm - Adding note ${newNote}:`, note_added);
-      
-      setNotes(notes.concat(note_added));
+      // Pushing note to the server.
+      noteService
+        .create(note_added)
+        .then((note_returned) => {
+          setNotes(notes.concat(note_returned));
+          setNewNote('');
+        });
     } else {
       console.log(`Comp.NoteAddForm - Note adding, empty note (${newNote}).`);
     }
@@ -41,8 +48,23 @@ const App = () => {
     console.log(`Comp.NoteAddForm - Changing: ${event.target.value}`);
     setNewNote(event.target.value);
   }
-
+  
   const switchNoteShow = () => setShowAll(!showAll);
+  
+  const toggleImportanceOf = (id) => {
+    console.log(`Toggle importance - Id: ${id}.`);
+    const note = notes.find((n) => n.id === id);
+    const note_next = { ...note, important: !note.important};
+
+    noteService
+      .update(id, note_next)
+      .then((note_returned) => {
+        setNotes(notes.map((note) => note.id === id 
+          ? note_returned
+          : note 
+        ));
+      })
+  }
 
   const notesToShow = showAll
     ? notes
@@ -58,7 +80,11 @@ const App = () => {
       </div>
       <ul>
         {notesToShow.map((note) => (
-          <Note key={note.id} note={note} />
+          <Note 
+            key={note.id} 
+            note={note} 
+            toggleImportance={() => toggleImportanceOf(note.id)}
+          />
         ))}
       </ul>
       <form onSubmit={handleNoteAdd}>

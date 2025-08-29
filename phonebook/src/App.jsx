@@ -1,31 +1,31 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+import personsService from './services/persons';
+
 import PersonsList from './components/Persons';
 import Search from './components/Search';
 import PersonForm from './components/PersonForm';
 
 const App = () => {
-  // Vars
+  // Vars.
   const [ persons, setPersons ] = useState([]);
   const [ newName, setNewName ] = useState('');
   const [ newNumber, setNewNumber ] = useState('');
-
+  // Get the persons and number from the server.
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => {
-        console.log(`Persons - Received l: ${response.data.length}, data:`, response.data);
-        setPersons(response.data);
+    personsService
+      .getAll()
+      .then(persons_initial => {
+        console.log(`Persons - Received l: ${persons_initial.length}, data:`, persons_initial);
+        setPersons(persons_initial);
       });
   }, []);
 
   // Form
   const addPersonToPhonebook = (event) => {
     event.preventDefault();
-
-    const personNames = persons.map((person) => person.name); 
-    
+    const personNames = persons.map((person) => person.name);
     const personAlreadyExists = personNames.includes(newName);
 
     // Add the person (or not if invalid entry).
@@ -37,15 +37,19 @@ const App = () => {
     } else {
       const id = persons[persons.length - 1].id + 1;
       console.log(`Form.addPerson - Person: ${newName}, id: ${id}`);
-      const persons_new = persons.concat(
-        {
-          name: newName,
-          number: newNumber,
-          id: id
-        }
-      );
-      setPersons(persons_new);
+      const newPerson = {
+        name: newName,
+        number: newNumber,
+      };
+      // Push to the server.
+      personsService
+        .create(newPerson)
+        .then(personReturned => {
+          setPersons(persons.concat(personReturned));
+        });
     }
+    setNewName('');
+    setNewNumber('');
   };
   const handleNameInput = (event) => {
     setNewName(event.target.value);
