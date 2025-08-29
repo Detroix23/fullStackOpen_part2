@@ -15,9 +15,9 @@ const App = () => {
   useEffect(() => {
     personsService
       .getAll()
-      .then(persons_initial => {
-        console.log(`Persons - Received l: ${persons_initial.length}, data:`, persons_initial);
-        setPersons(persons_initial);
+      .then(personsInitial => {
+        console.log(`Persons - Received l: ${personsInitial.length}, data:`, personsInitial);
+        setPersons(personsInitial);
       });
   }, []);
 
@@ -30,9 +30,29 @@ const App = () => {
     // Add the person (or not if invalid entry).
     if (newName === '') {
       console.log(`Form.addPerson - Empty string (${newName}).`);
+
     } else if (personAlreadyExists) {
-      console.log(`Form.addPerson - Already in (${newName})`);
-      window.alert(`'${newName}' is already in the phonebook.`);
+      const replaceConfirmed = window.confirm(`'${newName}' is already in the phonebook. Replace the number with ${newNumber}?`);
+      if (replaceConfirmed) {
+        console.log(`Form.addPerson - Replacing (${newName}).`);
+        const id = persons.find(person => person.name === newName).id;
+        const newPerson = {
+          name: newName,
+          number: newNumber
+        };
+        personsService
+          .updatePerson(id, newPerson)
+          .then(personReturned => {
+            setPersons(persons.map(person => person.id !== id
+              ? person
+              : personReturned
+            ));
+          });
+
+      } else {
+        console.log(`Form.addPerson - Already in: (${newName}).`);
+      }
+      
     } else {
       const id = persons[persons.length - 1].id + 1;
       console.log(`Form.addPerson - Person: ${newName}, id: ${id}`);
@@ -73,6 +93,7 @@ const App = () => {
       <Search persons={persons} />
 
       <h2>Add people.</h2>
+      <i>Replace by entering an already entered name.</i>
       <PersonForm 
         addPersonToPhonebook={addPersonToPhonebook}
         handleNameInput={handleNameInput}
