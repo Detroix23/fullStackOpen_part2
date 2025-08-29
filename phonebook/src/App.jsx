@@ -57,8 +57,11 @@ const App = () => {
     setNewNumber(event.target.value);
   }
   const onDeletePerson = (id) => {
-    personsService.deletePerson(id);
-    setPersons(persons.filter(person => person.id !== id));
+    const deleteConfirmed = window.confirm(`Do you really want to delete '${persons.find(person => person.id === id).name}'?`);
+    if (deleteConfirmed) {
+      personsService.deletePerson(id);
+      setPersons(persons.filter(person => person.id !== id));
+    }    
   }
 
 

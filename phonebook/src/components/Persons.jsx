@@ -17,9 +17,6 @@ const PersonDelete = ({ id, handleDeletePerson }) => {
 }
 
 const PersonsList = ({ persons, onDeletePerson }) => {
-  
-  
-
   return (
     <table>
       <thead>
