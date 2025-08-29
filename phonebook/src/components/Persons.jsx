@@ -1,12 +1,25 @@
 
 const Person = ({ name, number }) => (
-  <tr>
+  <>
     <td>{name}</td>
     <td>{number === '' ? "none" : number}</td>
-  </tr>
+  </>
 );
 
-const PersonsList = ({ persons }) => {
+const PersonDelete = ({ id, handleDeletePerson }) => {
+  return (
+    <td>
+      <button onClick={() => handleDeletePerson(id)}>
+        Delete
+      </button>
+    </td>
+  );
+}
+
+const PersonsList = ({ persons, onDeletePerson }) => {
+  
+  
+
   return (
     <table>
       <thead>
@@ -17,7 +30,13 @@ const PersonsList = ({ persons }) => {
       </thead>
       <tbody>
         {persons.map((person) => 
-          <Person key={person.id} name={person.name} number={person.number}/>
+          <tr key={person.id}>
+            <Person 
+              name={person.name} 
+              number={person.number}
+            />
+            <PersonDelete id={person.id} handleDeletePerson={onDeletePerson}/>
+          </tr>
         )}  
       </tbody>
     </table>

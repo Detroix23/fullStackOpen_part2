@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 
 import personsService from './services/persons';
 
@@ -57,6 +56,11 @@ const App = () => {
   const handleNumberInput = (event) => {
     setNewNumber(event.target.value);
   }
+  const onDeletePerson = (id) => {
+    personsService.deletePerson(id);
+    setPersons(persons.filter(person => person.id !== id));
+  }
+
 
   return (
     <div>
@@ -73,7 +77,10 @@ const App = () => {
       />
       
       <h2>Numbers.</h2>
-      <PersonsList persons={persons} />
+      <PersonsList 
+        persons={persons} 
+        onDeletePerson={onDeletePerson}
+      />
     </div>
   );
 };

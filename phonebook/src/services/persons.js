@@ -14,4 +14,15 @@ const create = (newObject) => {
   return request.then(response => response.data);
 };
 
-export default { getAll, create };
+/*
+ * Delete and return the person obejct from the JSON DB.
+ */
+const deletePerson = (id) => {
+  const request = axios.delete(`${baseUrl}/${id}`);
+  console.log('deletePerson - req:', request);
+  return request
+    .then(response => response.data)
+    .catch(() => window.alert(`Already deleted id ${id}.`));
+};
+
+export default { getAll, create, deletePerson };
