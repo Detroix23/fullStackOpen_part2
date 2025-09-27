@@ -65,6 +65,7 @@ const App = () => {
     if (newName === '') {
       console.log(`Form.addPerson - Empty string (${newName}).`);
 
+    // Replace.
     } else if (personAlreadyExists) {
       const replaceConfirmed = window.confirm(`'${newName}' is already in the phonebook. Replace the number with ${newNumber}?`);
       if (replaceConfirmed) {
@@ -74,17 +75,27 @@ const App = () => {
           name: newName,
           number: newNumber
         };
-        personsService
+        let updateResponse = personsService
           .updatePerson(id, newPerson)
           .then(personReturned => {
-            setPersons(persons.map(person => person.id !== id
+            let newPersons = persons.map(person => person.id !== id
               ? person
               : personReturned
-            ));
+            )
+            newPerson = newPerson.filter(person => person !== undefined);
+
+            setPersons(newPerson);
+          })
+          .catch(() => {
+            console.log(`Person is deleted: id ${id}.`)
+            setPersons(persons.filter(person => person.id !== id));
           });
         
-          setBannerSuccess(`Succefully modified ${newPerson.name}'s number to ${newPerson.number}.`, 5000);
+        setTimeout(() => console.log('updateResponse:', updateResponse));
+        
+        setBannerSuccess(`Succefully modified ${newPerson.name}'s number to ${newPerson.number}.`, 5000);
       }
+    // Add.
     } else {
       const id = persons[persons.length - 1].id + 1;
       console.log(`Form.addPerson - Person: ${newName}, id: ${id}`);
@@ -105,20 +116,21 @@ const App = () => {
     setNewNumber('');
   };
 
-  const handleNameInput = (event) => {
-    setNewName(event.target.value);
-  };
-
-  const handleNumberInput = (event) => {
-    setNewNumber(event.target.value);
-  };
-
   const onDeletePerson = (id) => {
     const deleteConfirmed = window.confirm(`Do you really want to delete '${persons.find(person => person.id === id).name}'?`);
     if (deleteConfirmed) {
       personsService.deletePerson(id);
       setPersons(persons.filter(person => person.id !== id));
     }    
+  };
+
+
+  const handleNameInput = (event) => {
+    setNewName(event.target.value);
+  };
+
+  const handleNumberInput = (event) => {
+    setNewNumber(event.target.value);
   };
 
 
