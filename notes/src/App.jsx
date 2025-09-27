@@ -4,10 +4,23 @@ import axios from 'axios';
 import noteService from './services/notes';
 import Note from './components/Note';
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
+
+  return (
+    <div className='error-message'>
+      {message}
+    </div>
+  );
+}
+
 const App = () => {
   const [ notes, setNotes ] = useState([]);
   const [ newNote, setNewNote ] = useState("");
   const [ showAll, setShowAll ] = useState(true);
+  const [ errorMessage, setErrorMessage ] = useState('(X) - First fake error.');
 
   // Receiving notes from JSON server.
   useEffect(() => {
@@ -64,6 +77,14 @@ const App = () => {
           : note 
         ));
       })
+      .catch(errorReceived => {
+        setErrorMessage(
+          `Note '${note.content}' was already removed.`
+        );
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000)
+      });
   }
 
   const notesToShow = showAll
@@ -73,6 +94,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
+      <Notification message={errorMessage} />
       <div>
         <button onClick={switchNoteShow}>
           Show {showAll ? 'important only' : 'all'}.

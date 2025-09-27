@@ -6,11 +6,33 @@ import PersonsList from './components/Persons';
 import Search from './components/Search';
 import PersonForm from './components/PersonForm';
 
+const BannerSuccess = ({ message }) => {
+  const bannerStyle = {
+    color: "green",
+    background: "lightgray",
+    fontSize: "20px",
+    borderStyle: "solid",
+    borderRadius: "5px",
+    padding: "10px",
+    marginBottom: "10px",
+  };
+  if (message !== null) {
+    return (
+      <div style={bannerStyle}>
+        {message}
+      </div>
+    );
+  }
+}
+
 const App = () => {
   // Vars.
   const [ persons, setPersons ] = useState([]);
   const [ newName, setNewName ] = useState('');
   const [ newNumber, setNewNumber ] = useState('');
+  const [ errorMessage, setErrorMessage ] = useState(null);
+  const [ successMessage, setSuccessMessage ] = useState(null);
+
   // Get the persons and number from the server.
   useEffect(() => {
     personsService
@@ -20,6 +42,18 @@ const App = () => {
         setPersons(personsInitial);
       });
   }, []);
+
+  // Messages
+  const setBannerSuccess = (message, duration) => {
+    console.log(`set: ${message}`);
+    
+    setSuccessMessage(message);
+    setTimeout(() => {
+      setSuccessMessage(null);
+      console.log(`set: null after ${duration}ms.`);
+      
+    }, duration);
+  };
 
   // Form
   const addPersonToPhonebook = (event) => {
@@ -48,11 +82,9 @@ const App = () => {
               : personReturned
             ));
           });
-
-      } else {
-        console.log(`Form.addPerson - Already in: (${newName}).`);
+        
+          setBannerSuccess(`Succefully modified ${newPerson.name}'s number to ${newPerson.number}.`, 5000);
       }
-      
     } else {
       const id = persons[persons.length - 1].id + 1;
       console.log(`Form.addPerson - Person: ${newName}, id: ${id}`);
@@ -66,28 +98,35 @@ const App = () => {
         .then(personReturned => {
           setPersons(persons.concat(personReturned));
         });
+
+      setBannerSuccess(`Succefully added person ${newPerson.name} at ${newPerson.number}.`, 5000);
     }
     setNewName('');
     setNewNumber('');
   };
+
   const handleNameInput = (event) => {
     setNewName(event.target.value);
   };
+
   const handleNumberInput = (event) => {
     setNewNumber(event.target.value);
-  }
+  };
+
   const onDeletePerson = (id) => {
     const deleteConfirmed = window.confirm(`Do you really want to delete '${persons.find(person => person.id === id).name}'?`);
     if (deleteConfirmed) {
       personsService.deletePerson(id);
       setPersons(persons.filter(person => person.id !== id));
     }    
-  }
+  };
 
 
   return (
     <div>
       <h1>Phonebook</h1>
+
+      <BannerSuccess message={successMessage} />
 
       <h2>Search</h2>
       <Search persons={persons} />

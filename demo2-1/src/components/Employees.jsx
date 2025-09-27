@@ -3,7 +3,7 @@
 
 const EmployeeCard = ({ name, salary}) => {
   return (
-    <li>
+    <li className="employee-card">
       {`The employee ${name} has a salary of ${salary}.`}
     </li>
   );
