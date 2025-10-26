@@ -1,60 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
 
-const Search = ({ onSearch, handleChange }) => {
-  return (
-    <form onSubmit={onSearch} >
-      <input type="text" onChange={handleChange} placeholder="Search countries."/>
-    </form>
-  );
-};
+import { Search, SearchResult } from './components/Search';
+import searchService from './services/search';
 
-const SearchResult = ({ searchValue, countriesName }) => {
-  if (!searchValue) {
-    return (
-      <>
-        <p>...</p>
-      </>
-    );
-  } else {
-    const similarNames = countriesName.filter(name => name
-      .toLowerCase()
-      .startsWith(
-        searchValue.toLowerCase()
-      )
-    );
-    
-    console.log('SearchResult - similarNames:', similarNames);
-
-    if (similarNames.length == 0) {
-      return (
-        <>
-          <p>No country matching this name.</p>
-        </>
-      );
-    } else if (similarNames.length == 1) {
-      const foundName = similarNames[0];
-      return (
-        <>
-          <h1>{foundName}</h1>
-        </>
-      )
-    } else {
-      return (
-        <ul>
-          <li key="countriesName-t" ><b>Countries</b></li>
-          {similarNames.map((country, index) => (
-              <li key={`countriesName-${index}`}>
-                {country}
-              </li>
-            )
-          )}
-        </ul>
-      );
-    }
-
-  }
-};
 
 /*
  * This app allow to get info about countries around the globe.
@@ -65,6 +14,11 @@ const App = () => {
   const [ searchValue, setSearchValue ] = useState(null);
   // All the availbe countries, for the global search.
   const [ countriesName, setCountriesName ] = useState([]);
+  const [ countriesFiltered, setCountriesFiltered ] = useState([]);
+  // Found a precise country.
+  const [ foundCountry, setFoundCountry ] = useState(null);
+  const [ foundName, setFoundName ] = useState(null);
+
 
   // Getting all countries name.
   useEffect(() => {
@@ -83,23 +37,55 @@ const App = () => {
 
   }, []);
 
+  // Getting precise info for the found country.
+  useEffect(() => {
+    if (foundName) {
+      console.log('useEffect: precise country.');
+      axios
+        .get(`https://studies.cs.helsinki.fi/restcountries/api/name/${foundName}`)
+        .then(response => {setFoundCountry(response.data)})
+        .catch(() => {
+          console.log(`useEffect: precise country - Error getting country ${foundName}.`);
+        })
+    }
+  }, [foundName]);
 
   // Handlers.
   const handleSearchChange = (event) => {
-    setSearchValue(event.target.value);
-    console.log(`Search: ${event.target.value}`);
+    const search = event.target.value;
+    setSearchValue(search);
+    console.log(`App.handleSearchChange - Search: ${search}`);
+
+    const newCountries = searchService.filter_countries(countriesName, search);
+    setCountriesFiltered(newCountries);
+
+    console.log("App.handleSearchChange - And found:", newCountries);
+
+    if (newCountries.length == 1) {
+      // Save found name to the state.
+      const currentFoundName = newCountries[0];
+      setFoundName(currentFoundName);
+
+      console.log("App.handleSearchChange - Found country:", foundName, foundCountry);
+    }
+    
   };
 
   const onSearch = (event) => {
     event.preventDefault();
   };
 
-
   return (
     <>
       <h1>Countries info.</h1>
-      <Search onSearch={onSearch} handleChange={handleSearchChange} />
-      <SearchResult searchValue={searchValue} countriesName={countriesName} />
+      <Search 
+        onSearch={onSearch} 
+        handleChange={handleSearchChange} />
+      <SearchResult 
+        similarNames={countriesFiltered}
+        foundCountry={foundCountry}
+        foundName={foundName}
+      />
     </>
   );
 };

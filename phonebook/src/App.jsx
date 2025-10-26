@@ -34,6 +34,7 @@ const App = () => {
   const [ successMessage, setSuccessMessage ] = useState(null);
 
   // Get the persons and number from the server.
+  // useEffect hook allows to connect to external system.
   useEffect(() => {
     personsService
       .getAll()
