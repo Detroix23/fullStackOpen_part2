@@ -4,16 +4,47 @@ const SearchError = ({ message }) => <p>{message}</p>
 
 const Flag = ({ source, width, alt }) => <img src={source} width={width} alt={alt} />
 
-const FoundMultiple = ({ similarNames }) => (
+const CountrySelecter = ({ name, setFoundName }) => {
+  const handleClick = (name) => () => {
+    console.log(`Results.CountrySelecter - Set to ${name}.`);
+    return setFoundName(name);
+  }
+
+  return (
+    <button onClick={handleClick(name)} style={{marginLeft: "10px"}}>
+      Show
+    </button>
+  );
+}
+
+const FoundMultiple = ({ similarNames, setFoundName }) => (
   <ul>
     {similarNames.map((country, index) => (
         <li key={`countriesName-${index}`}>
-          {country}
+          {country} 
+          <CountrySelecter
+            name={country}
+            setFoundName={setFoundName}
+          />
         </li>
       )
     )}
   </ul>
 )
+
+const Languages = ({ languages }) => {
+  console.log(`Results.Languages - Provided:`, languages);
+
+  return (
+    <ul>
+      {Object.entries(languages).map(([ code, name ]) => (
+        <li key={`countryLanguage-${code}`}>
+          {name}
+        </li>
+      ))}
+    </ul>
+  )
+};
 
 const FoundCountry = ({ name, data }) => {
   const use_png = false
@@ -28,7 +59,6 @@ const FoundCountry = ({ name, data }) => {
     )
   }
 
-  console.log("Results.FoundCountry - Lang", data.languages);
   const imageSource = use_png
     ? data.flags.png
     : data.flags.svg;
@@ -44,13 +74,7 @@ const FoundCountry = ({ name, data }) => {
       </ul>
 
       <h2>Languages</h2>
-      <ul>
-        {Object.entries(data.languages).map(([ code, name ]) => (
-          <li key={code}>
-            {name}
-          </li>
-        ))}
-      </ul>
+      <Languages languages={data.languages} />
 
       <h2>Flag</h2>
       <Flag 

@@ -23,6 +23,7 @@ const SearchResult = ({
   similarNames,
   foundCountry,
   foundName,
+  setFoundName,
 }) => {
   // Nothing matches.
   if (similarNames.length == 0) {
@@ -30,9 +31,12 @@ const SearchResult = ({
   }
 
   // One match: we found the country.
-  else if (similarNames.length == 1) {
+  else if (foundName !== null) {
     console.log(`Search.SearchResult - foundName: ${foundName} similarNames:`, similarNames);
-    return <FoundCountry name={foundName} data={foundCountry} />
+    return <FoundCountry 
+      name={foundName} 
+      data={foundCountry} 
+    />
   }
 
   // Too many matches.
@@ -41,7 +45,10 @@ const SearchResult = ({
   }
 
   // Some matches.
-  return <FoundMultiple similarNames={similarNames} />;
+  return <FoundMultiple 
+    similarNames={similarNames}
+    setFoundName={setFoundName}
+  />;
 };
 
 export { Search, SearchResult };

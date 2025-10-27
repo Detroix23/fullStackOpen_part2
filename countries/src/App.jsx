@@ -22,7 +22,7 @@ const App = () => {
 
   // Getting all countries name.
   useEffect(() => {
-    console.log('useEffect - countries name.');
+    console.log('useEffect: countries name.');
     axios
       .get('https://studies.cs.helsinki.fi/restcountries/api/all')
       .then(response => {
@@ -40,7 +40,7 @@ const App = () => {
   // Getting precise info for the found country.
   useEffect(() => {
     if (foundName) {
-      console.log('useEffect: precise country.');
+      console.log(`useEffect: precise country (${foundName}).`);
       axios
         .get(`https://studies.cs.helsinki.fi/restcountries/api/name/${foundName}`)
         .then(response => {setFoundCountry(response.data)})
@@ -61,14 +61,13 @@ const App = () => {
 
     console.log("App.handleSearchChange - And found:", newCountries);
 
-    if (newCountries.length == 1) {
-      // Save found name to the state.
-      const currentFoundName = newCountries[0];
-      setFoundName(currentFoundName);
+    const currentFoundName = newCountries.length == 1 
+      ? newCountries[0]
+      : null;
 
-      console.log("App.handleSearchChange - Found country:", foundName, foundCountry);
-    }
-    
+    setFoundName(currentFoundName);
+
+    console.log(`App.handleSearchChange - Found country: ${currentFoundName}, data:`, foundCountry);
   };
 
   const onSearch = (event) => {
@@ -85,6 +84,7 @@ const App = () => {
         similarNames={countriesFiltered}
         foundCountry={foundCountry}
         foundName={foundName}
+        setFoundName={setFoundName}
       />
     </>
   );
