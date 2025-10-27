@@ -1,5 +1,6 @@
 // components/Search.jsx
 
+import weather from "../services/weather";
 import { SearchError, FoundMultiple, FoundCountry } from "./Results";
 
 const Search = ({ onSearch, handleChange }) => {
@@ -24,6 +25,7 @@ const SearchResult = ({
   foundCountry,
   foundName,
   setFoundName,
+  weather,
 }) => {
   // Nothing matches.
   if (similarNames.length == 0) {
@@ -34,8 +36,9 @@ const SearchResult = ({
   else if (foundName !== null) {
     console.log(`Search.SearchResult - foundName: ${foundName} similarNames:`, similarNames);
     return <FoundCountry 
-      name={foundName} 
-      data={foundCountry} 
+      name={foundName}
+      data={foundCountry}
+      weather={weather}
     />
   }
 
